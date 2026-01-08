@@ -1,0 +1,8 @@
+.env
+*.env
+
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+verified_members.json
