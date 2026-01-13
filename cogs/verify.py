@@ -22,17 +22,17 @@ UTC = dt.timezone.utc
 SEASON_START_MONTH = 4
 SEASON_START_DAY = 1
 REVERIFY_DEADLINE_MONTH = 4
-REVERIFY_DEADLINE_DAY = 7
+REVERIFY_DEADLINE_DAY = 14
 
 DM_ANNOUNCE_TIME_UTC = dt.time(hour=16, minute=0, tzinfo=UTC)   # April 1, 16:00 UTC
-ENFORCE_TIME_UTC = dt.time(hour=0, minute=5, tzinfo=UTC)        # April 7, 00:05 UTC
+ENFORCE_TIME_UTC = dt.time(hour=7, minute=5, tzinfo=UTC)        # April 7, 00:05 UTC
 
 REVERIFY_DM_TEXT = (
     "Ahoy! The new membership season is underway (April 1–March 31).\n\n"
     "If you have renewed (or will renew) your membership, please re-verify your Discord account using the "
     "**Verify** button in the verification channel.\n\n"
-    "You will not be kicked from the server, but **as of April 7** you will be limited to the social channels "
-    "until you verify. If you renew after April 7, you can verify at any time afterward to regain full access."
+    "You will not be kicked from the server, but **as of April 14** you will be limited to the social channels "
+    "until you verify. If you renew after April 14, you can verify at any time afterward to regain full access."
 )
 
 
