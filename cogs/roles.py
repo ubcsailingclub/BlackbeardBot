@@ -274,3 +274,70 @@ class RoleAssignmentsCog(commands.Cog):
 
 async def setup(bot: commands.Bot):
     await bot.add_cog(RoleAssignmentsCog(bot))
+
+
+    # -------------------- Syncing Panel Content (should not remove reacts) --------------------
+    @commands.command(name="sync_role_panels")
+    @commands.has_permissions(administrator=True)
+    async def sync_role_panels(self, ctx: commands.Context) -> None:
+        if not isinstance(ctx.channel, discord.TextChannel):
+            return
+
+        if ctx.channel.name != self.roles_channel_name:
+            await ctx.send(f"Run this in #{self.roles_channel_name}.", delete_after=10)
+            return
+
+        by_key = {p["key"]: p for p in self.panels}
+        new_panel_ids: Dict[str, int] = dict(self.panel_ids)
+
+        # Emojis you do NOT want to auto-add (variant helpers)
+        skip_auto_add = {"🧜", "🧜‍♂️", "👯", "👯‍♂️", "🛠"}  # keep 🛠️ as the canonical one
+
+        for key, panel in by_key.items():
+            embed = self._build_embed(panel)
+
+            msg_id = new_panel_ids.get(key)
+            msg: Optional[discord.Message] = None
+
+            if msg_id:
+                try:
+                    msg = await ctx.channel.fetch_message(int(msg_id))
+                except discord.NotFound:
+                    msg = None
+                except discord.Forbidden:
+                    await ctx.send("I need Read Message History in this channel to sync panels.", delete_after=10)
+                    return
+                except discord.HTTPException as e:
+                    print(f"[ROLES] fetch_message failed for {key} ({msg_id}): {e}")
+                    msg = None
+
+            if msg is None:
+                # If message is missing/deleted, re-post this panel (reactions will be new on that message)
+                msg = await ctx.channel.send(embed=embed)
+                new_panel_ids[key] = msg.id
+            else:
+                # Update embed in place: reactions remain unchanged
+                try:
+                    await msg.edit(embed=embed)
+                except discord.HTTPException as e:
+                    print(f"[ROLES] Failed to edit panel {key} ({msg.id}): {e}")
+
+            # Add only missing reactions (never remove existing)
+            try:
+                existing = {_emoji_key(r.emoji) for r in (msg.reactions or [])}
+                for emoji in panel["emoji_to_role"].keys():
+                    if emoji in skip_auto_add:
+                        continue
+                    if emoji not in existing:
+                        try:
+                            await msg.add_reaction(emoji)
+                        except discord.HTTPException as e:
+                            print(f"[ROLES] Failed to add reaction {emoji!r} on {msg.id}: {e}")
+            except Exception as e:
+                print(f"[ROLES] Failed to sync reactions for {key} ({msg.id}): {e}")
+
+        self.panel_ids = new_panel_ids
+        self._save_state()
+        self._rebuild_message_map()
+
+        await ctx.send("Synced role panels (updated embeds; kept existing reactions).", delete_after=10)
