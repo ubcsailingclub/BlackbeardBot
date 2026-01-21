@@ -41,7 +41,7 @@ class RoleAssignmentsCog(commands.Cog):
                 "title": "Role Toggles — Updates",
                 "description": "React below to toggle roles (add/remove).",
                 "field_name": "Updates",
-                "field_value": "🎉  Events\n👕  Merch\n🛠️  Volunteer"",
+                "field_value": "🎉  Events\n👕  Merch\n🛠️  Volunteer",
                 "emoji_to_role": {
                     "🎉": "Events",
                     "👕": "Merch",
