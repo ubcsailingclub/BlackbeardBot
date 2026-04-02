@@ -873,14 +873,17 @@ class VerifyCog(commands.Cog):
         season_start = _season_start_utc(year)
         deadline = _reverify_deadline_utc(year)
 
+        dm_announce_dt = dt.datetime.combine(season_start.date(), DM_ANNOUNCE_TIME_UTC, tzinfo=UTC)
+        enforce_dt = dt.datetime.combine(deadline.date(), ENFORCE_TIME_UTC, tzinfo=UTC)
+
         for g in self.bot.guilds:
-            # DM catchup window: [Apr 1, Apr 7)
-            if season_start.date() <= now.date() < deadline.date():
+            # DM catchup window
+            if dm_announce_dt <= now < deadline:
                 if not await self.registry.was_dm_sent(g.id, year):
                     await self._dm_all_members_for_season(g, year)
 
-            # Enforcement catchup: on/after Apr 7
-            if now.date() >= deadline.date():
+            # Enforcement catchup
+            if now >= enforce_dt:
                 if not await self.registry.was_enforced(g.id, year):
                     await self._enforce_reverify_for_season(g, year)
 
@@ -924,7 +927,7 @@ class VerifyCog(commands.Cog):
                 pass
 
         # Catch up if bot was offline at scheduled times
-        await self._season_catchup()
+        self.bot.loop.create_task(self._season_catchup())
 
 
 # -------------------- extension setup --------------------

@@ -22,6 +22,7 @@ def build_intents() -> discord.Intents:
     intents.message_content = True
     intents.guilds = True
     intents.reactions = True
+    intents.members = True
 
     return intents
 
