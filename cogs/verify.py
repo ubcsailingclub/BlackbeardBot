@@ -29,8 +29,8 @@ ENFORCE_TIME_UTC = dt.time(hour=7, minute=5, tzinfo=UTC)        # April 7, 00:05
 
 REVERIFY_DM_TEXT = (
     "Ahoy! A new membership season has begun (April 1–March 31).\n\n"
-    "• **If you have already renewed** (or renew on the club website before April 14), you are all set! The bot (me!) will automatically check your status on April 14, renew your verification, and keep your existing roles intact (which you can manage in {roles_channel})—no manual action is needed.\n"
-    "• **If you renew after April 14**, your opt-in roles will be temporarily removed. To get them back, simply renew on the website and then click the **Verify** button in the {verify_channel} channel at any time to automatically restore all of your previous roles and access!"
+    "• **If you have already renewed** (or renew on the club website at https://ubcsailing.org/ before April 14), you are all set! The bot (me!) will automatically check your status on April 14, renew your verification, and keep your existing roles intact (which you can manage in {roles_channel})—no manual action is needed.\n"
+    "• **If you renew after April 14**, your opt-in roles will be temporarily removed. To get them back, simply renew on the club website (https://ubcsailing.org/) and then click the **Verify** button in the {verify_channel} channel at any time to automatically restore all of your previous roles and access!"
 )
 
 
