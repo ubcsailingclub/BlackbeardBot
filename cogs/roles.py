@@ -67,7 +67,7 @@ class RoleAssignmentsCog(commands.Cog):
                 "title": "Role Toggles — Community",
                 "description": "React below to toggle roles (add/remove).",
                 "field_name": "Community",
-                "field_value": f"🏁  Racing\n🧜‍♀️  WNB\n🧑‍🏫  Mentor\n📚  Mentee\n👯‍♀️  {social_role_name}",
+                "field_value": f"🏁  Racing\n🧜‍♀️  Women and Non-binary Sailors\n🧑‍🏫  Mentor\n📚  Mentee\n👯‍♀️  {social_role_name}",
                 "emoji_to_role": {
                     "🏁": "Racing",
                     "🧜‍♀️": "wnb",
