@@ -220,6 +220,22 @@ class WorkhoursCog(commands.Cog):
 
         return False
 
+    def _get_verify_channel_mention(self, guild: Optional[discord.Guild] = None) -> str:
+        """Resolve the clickable mention for the verification channel."""
+        # 1. Search specified guild first
+        if guild:
+            ch = discord.utils.get(guild.text_channels, name=config.VERIFY_CHANNEL_NAME)
+            if ch:
+                return f"<#{ch.id}>"
+
+        # 2. Search all bot guilds
+        for g in self.bot.guilds:
+            ch = discord.utils.get(g.text_channels, name=config.VERIFY_CHANNEL_NAME)
+            if ch:
+                return f"<#{ch.id}>"
+
+        return f"#{config.VERIFY_CHANNEL_NAME}"
+
     def _fetch_sheet_rows_sync(self) -> List[List[str]]:
         """Synchronous Google Sheet reading method, to be run in a separate thread executor."""
         spreadsheet_id = config.GOOGLE_SPREADSHEET_ID
@@ -337,7 +353,13 @@ class WorkhoursCog(commands.Cog):
         
         # 2. Check if they have a linked WildApricot account
         if not record:
-            msg = "You aren't a verified member, make sure you've signed up or renewed as a club member and then verify in the verifying channel."
+            verify_mention = self._get_verify_channel_mention(ctx.guild)
+            msg = (
+                "I don't track inactive members. If you're an active member, remember to "
+                f"verify your discord account in the {verify_mention} channel, then you can try "
+                "checking your hours with me again. If something is still not quite what you expect, "
+                "check your account status at ubcsailing.org or reach out to hello@ubcsailing.org for help with your account."
+            )
             if is_slash:
                 await ctx.interaction.followup.send(msg, ephemeral=ephemeral)
             else:
@@ -351,12 +373,39 @@ class WorkhoursCog(commands.Cog):
                         await ctx.send(f"{user.mention}, {msg}\n*(Tip: Enable DMs from server members so I can message you privately!)*")
             return
 
-        # 3. Check if they are an active, non-social member
+        # 3. Check if they are active
         status = (record.get("membership_status") or "").strip().lower()
-        level = (record.get("membership_level") or "").strip().lower()
+        if status != "active":
+            verify_mention = self._get_verify_channel_mention(ctx.guild)
+            msg = (
+                "I don't track inactive members. If you're an active member, remember to "
+                f"verify your discord account in the {verify_mention} channel, then you can try "
+                "checking your hours with me again. If something is still not quite what you expect, "
+                "check your account status at ubcsailing.org or reach out to hello@ubcsailing.org for help with your account."
+            )
+            if is_slash:
+                await ctx.interaction.followup.send(msg, ephemeral=ephemeral)
+            else:
+                if is_dm:
+                    await ctx.send(msg)
+                else:
+                    try:
+                        await user.send(f"{ctx.author.mention}, {msg}")
+                        await ctx.send(f"{user.mention}, I've sent you a DM with instructions!", delete_after=10)
+                    except discord.Forbidden:
+                        await ctx.send(f"{user.mention}, {msg}\n*(Tip: Enable DMs from server members so I can message you privately!)*")
+            return
 
-        if status != "active" or level == "social":
-            msg = "You aren't a verified member, make sure you've signed up or renewed as a club member and then verify in the verifying channel."
+        # 4. Check if they are a social member
+        level = (record.get("membership_level") or "").strip().lower()
+        if level == "social":
+            verify_mention = self._get_verify_channel_mention(ctx.guild)
+            msg = (
+                "Sailing club social members' work hours aren't tracked. If you recently became "
+                f"a general member, be sure to verify in the {verify_mention} channel and you can try "
+                "checking your hours with me again. If something is still not quite what you expect, "
+                "check your account status at ubcsailing.org or reach out to hello@ubcsailing.org for help with your account."
+            )
             if is_slash:
                 await ctx.interaction.followup.send(msg, ephemeral=ephemeral)
             else:
