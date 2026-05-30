@@ -358,7 +358,7 @@ class WorkhoursCog(commands.Cog):
                 "I don't track inactive members. If you're an active member, remember to "
                 f"verify your discord account in the {verify_mention} channel, then you can try "
                 "checking your hours with me again. If something is still not quite what you expect, "
-                "check your account status at ubcsailing.org or reach out to hello@ubcsailing.org for help with your account."
+                "check your account status at [ubcsailing.org](https://ubcsailing.org) or reach out to [hello@ubcsailing.org](mailto:hello@ubcsailing.org) for help with your account."
             )
             if is_slash:
                 await ctx.interaction.followup.send(msg, ephemeral=ephemeral)
@@ -381,7 +381,7 @@ class WorkhoursCog(commands.Cog):
                 "I don't track inactive members. If you're an active member, remember to "
                 f"verify your discord account in the {verify_mention} channel, then you can try "
                 "checking your hours with me again. If something is still not quite what you expect, "
-                "check your account status at ubcsailing.org or reach out to hello@ubcsailing.org for help with your account."
+                "check your account status at [ubcsailing.org](https://ubcsailing.org) or reach out to [hello@ubcsailing.org](mailto:hello@ubcsailing.org) for help with your account."
             )
             if is_slash:
                 await ctx.interaction.followup.send(msg, ephemeral=ephemeral)
@@ -404,7 +404,7 @@ class WorkhoursCog(commands.Cog):
                 "Sailing club social members' work hours aren't tracked. If you recently became "
                 f"a general member, be sure to verify in the {verify_mention} channel and you can try "
                 "checking your hours with me again. If something is still not quite what you expect, "
-                "check your account status at ubcsailing.org or reach out to hello@ubcsailing.org for help with your account."
+                "check your account status at [ubcsailing.org](https://ubcsailing.org) or reach out to [hello@ubcsailing.org](mailto:hello@ubcsailing.org) for help with your account."
             )
             if is_slash:
                 await ctx.interaction.followup.send(msg, ephemeral=ephemeral)
@@ -431,7 +431,7 @@ class WorkhoursCog(commands.Cog):
 
         # Check for duplicate name conflicts across active members in the registry
         if await self._has_duplicate_name_conflict(wa_name, user.id):
-            msg = "I had trouble confirming your hours, email the club treasurer at treasurer@ubcsailing.org"
+            msg = "I had trouble confirming your hours, email the club treasurer at [treasurer@ubcsailing.org](mailto:treasurer@ubcsailing.org)"
             if is_slash:
                 await ctx.interaction.followup.send(msg, ephemeral=ephemeral)
             else:
@@ -463,7 +463,7 @@ class WorkhoursCog(commands.Cog):
 
         embed = discord.Embed(
             title="⚓  Your Sailing Season Workhours",
-            description=f"Showing workhours for member **{wa_name}**.\n\n*If this seems wrong, reach out to treasurer@ubcsailing.org with any corrections and get an official tally.*",
+            description=f"Showing workhours for member **{wa_name}**.",
             color=discord.Color.blue() if verified_hours > 0 else discord.Color.orange()
         )
         embed.set_author(name=str(user), icon_url=user.display_avatar.url)
@@ -472,22 +472,20 @@ class WorkhoursCog(commands.Cog):
         season_text = f"📅  **Season:** `{season_start.strftime('%B %d, %Y')}` to `{season_end.strftime('%B %d, %Y')}`"
         embed.add_field(name="Current Season", value=season_text, inline=False)
 
-        # Verified, unverified (pending), and total hours
-        embed.add_field(
-            name="✅  Verified Hours",
-            value=f"**`{verified_hours:g}`** hour{'s' if verified_hours != 1 else ''}",
-            inline=True
+        # Pair labels and hours values directly to avoid scan/wrap confusion
+        hours_summary = (
+            f"✅  **Verified Hours:** `{verified_hours:g}`\n"
+            f"⏳  **Pending Review:** `{unverified_hours:g}`\n"
+            f"📊  **Total Submitted:** `{total_hours:g}`"
         )
-        embed.add_field(
-            name="⏳  Pending Hours",
-            value=f"**`{unverified_hours:g}`** hour{'s' if unverified_hours != 1 else ''}",
-            inline=True
+        embed.add_field(name="Season Tally", value=hours_summary, inline=False)
+
+        # Workhours link and correction instructions moved to the very end of the message
+        info_value = (
+            "Submit hours here: https://ubcsailing.org/Workhour\n"
+            "If this seems wrong, reach out to [treasurer@ubcsailing.org](mailto:treasurer@ubcsailing.org) with any corrections and get an official tally."
         )
-        embed.add_field(
-            name="📊  Total Submitted",
-            value=f"**`{total_hours:g}`** hour{'s' if total_hours != 1 else ''}",
-            inline=True
-        )
+        embed.add_field(name="\u200b", value=info_value, inline=False)
 
         # Elegant footer and thumbnail if any
         embed.set_footer(text="BlackbeardBot — UBC Sailing Club", icon_url=ctx.bot.user.display_avatar.url if ctx.bot.user else None)
