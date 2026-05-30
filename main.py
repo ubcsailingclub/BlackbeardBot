@@ -12,9 +12,15 @@ class BlackbeardBot(commands.Bot):
         await self.load_extension("cogs.roles")
         await self.load_extension("cogs.verify")
         await self.load_extension("cogs.oops_something_broke")
+        await self.load_extension("cogs.workhours")
 
     async def on_ready(self) -> None:
         print(f"Logged in as {self.user} (id={self.user.id})")
+        try:
+            synced = await self.tree.sync()
+            print(f"Synced {len(synced)} application command(s) successfully.")
+        except Exception as e:
+            print(f"Error syncing application commands: {e}")
 
 
 def build_intents() -> discord.Intents:
