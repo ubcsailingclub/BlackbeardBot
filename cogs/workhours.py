@@ -336,7 +336,6 @@ class WorkhoursCog(commands.Cog):
 
         # If it's a prefix command in a channel, we cannot send a true ephemeral response,
         # so we will send the user a DM and let them know.
-        # But wait: if it's a slash command, ctx.interaction is NOT None, and ephemeral=True works perfectly!
         # If it's a prefix command in a channel (ctx.interaction is None and not is_dm),
         # we will send the response in DMs, but print a small friendly note in the channel.
         is_slash = ctx.interaction is not None
@@ -347,6 +346,9 @@ class WorkhoursCog(commands.Cog):
         # Acknowledge immediately if Slash Command to prevent timeouts
         if is_slash:
             await ctx.interaction.response.defer(ephemeral=ephemeral)
+        # If it wasn't a Slash, delete the initial msg to keep channels/DMs clean
+        else:
+            await ctx.message.delete()
 
         # 1. Lookup verified member record
         record = await self._find_verified_member_record(user.id, guild_id)
@@ -422,7 +424,7 @@ class WorkhoursCog(commands.Cog):
         # 4. Get or fetch WildApricot full name
         wa_name = await self._get_or_fetch_wa_name(record, user.id)
         if not wa_name:
-            msg = "I could not retrieve your WildApricot account name. Please contact a staff member."
+            msg = "I could not retrieve your [ubcsailing.org](https://ubcsailing.org) account name. Please check that your account status is ok. If problems still happen reach out to [hello@ubcsailing.org](mailto:hello@ubcsailing.org) for help with your account."
             if is_slash:
                 await ctx.interaction.followup.send(msg, ephemeral=ephemeral)
             else:
