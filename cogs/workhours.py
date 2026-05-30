@@ -424,7 +424,7 @@ class WorkhoursCog(commands.Cog):
         # 4. Get or fetch WildApricot full name
         wa_name = await self._get_or_fetch_wa_name(record, user.id)
         if not wa_name:
-            msg = "I could not retrieve your WildApricot account name. Please contact a staff member."
+            msg = "I could not retrieve your [ubcsailing.org](https://ubcsailing.org) account name. Please check that your account status is ok. If problems still happen reach out to [hello@ubcsailing.org](mailto:hello@ubcsailing.org) for help with your account."
             if is_slash:
                 await ctx.interaction.followup.send(msg, ephemeral=ephemeral)
             else:
