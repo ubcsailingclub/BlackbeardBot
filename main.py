@@ -13,6 +13,7 @@ class BlackbeardBot(commands.Bot):
         await self.load_extension("cogs.verify")
         await self.load_extension("cogs.oops_something_broke")
         await self.load_extension("cogs.workhours")
+        await self.load_extension("cogs.welcome")
 
     async def on_ready(self) -> None:
         print(f"Logged in as {self.user} (id={self.user.id})")
