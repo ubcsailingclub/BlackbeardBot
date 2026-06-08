@@ -25,13 +25,12 @@ class WelcomeCog(commands.Cog):
 
         message = (
             f"Hi! Thanks for joining the UBC Sailing discord!\n\n"
-            f"Unverified members can only see a few channels. "
             f"To get full access, head over to {verify_link} and verify your "
             f"membership by connecting your discord account to your "
             f"ubcsailing.org account.\n\n"
             f"Once you're verified, you can use {roles_link} to add roles to "
             f"yourself and unlock fleet, community, and waitlist channels.\n\n"
-            f"See you on the water! ⛵"
+            f"See you on the water!"
         )
 
         try:
